@@ -1,9 +1,14 @@
 import api from '../lib/api';
 
-export const getAllProducts = async () => {
-  const response = await api.get('/products');
-  return response.data;
-};
+export async function fetchProducts(filters?: Record<string, any>) {
+  try {
+    const response = await api.get('/products', { params: filters });
+    return response.data;
+  } catch (error) {
+    console.error('Ürünler alınırken hata oluştu:', error);
+    return [];
+  }
+}
 
 export const createProduct = async (data: {
   name: string;
