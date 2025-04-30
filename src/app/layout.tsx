@@ -1,8 +1,8 @@
-
 import "./globals.css";
 import { Roboto, Pacifico } from "next/font/google";
 import { Toaster } from "sonner";
 import TopBar from "@/components/TopBar";
+import { CartProvider } from "../contexts/CartContext";
 
 const roboto = Roboto({ subsets: ["latin"], weight: "400" });
 const pacifico = Pacifico({
@@ -19,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${roboto.className} ${pacifico.variable}`}>
       <body>
-        <TopBar/>
-        {children}
+        <CartProvider>
+          <TopBar />
+          {children}
+        </CartProvider>
         <Toaster position="top-center" richColors /> {/* Toaster global */}
       </body>
     </html>

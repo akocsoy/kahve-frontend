@@ -2,13 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Trash2, X } from "lucide-react";
-import {
-  fetchCart,
-  clearCart,
-  addToCart,
-  removeItem,
-} from "../services/cartService";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { useCart } from "@/contexts/CartContext";
 interface CartItem {
   product: {
     _id: string;
@@ -26,15 +23,14 @@ export default function CartSidebar({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
+  const router = useRouter()
+  const { addToCart, removeFromCart, clearCart, cartItems, refreshCart } = useCart();
   useEffect(() => {
     if (!isOpen) return;
 
     const getCart = async () => {
       try {
-        const data = await fetchCart();
-        setCartItems(data.items || []);
+        await refreshCart()
       } catch (err) {
         console.error("Sepet alınamadı:", err);
       }
@@ -45,21 +41,18 @@ export default function CartSidebar({
   const handleClearCart = async () => {
     try {
       await clearCart();
-      toast.success("Sepet başarıyla temizlendi!");
-      setCartItems([]); // sepet verisini yeniden çekiyoruz (cartı güncellemek için)
     } catch (error) {
       toast.error("Sepet temizlenirken bir hata oluştu.");
     }
   };
+  const goToCartPage = () => {
+    onClose(); // sidebar'ı kapat
+    router.push("/cart"); // sepete yönlendir
+  };
   const handleIncreaseQuantity = async (product: any) => {
     try {
-      await addToCart({ productId: product._id, quantity: 1 });
-      const updatedCart = cartItems.map((item) =>
-        item.product._id === product._id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-      setCartItems(updatedCart); // Sepeti güncelle
+      await addToCart(product._id,1);
+      await refreshCart(); // Sepeti güncelle
       toast.success("Ürün adeti artırıldı!");
     } catch (error) {
       console.error(error);
@@ -69,15 +62,8 @@ export default function CartSidebar({
 
   const handleDecreaseQuantity = async (product: any) => {
     try {
-      await addToCart({ productId: product._id, quantity: -1 });
-      const updatedCart = cartItems
-        .map((item) =>
-          item.product._id === product._id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0);
-      setCartItems(updatedCart); // Sepeti güncelle
+      await addToCart(product._id, -1);
+      await refreshCart(); // Sepeti güncelle
       toast.success("Ürün adeti azaltıldı!");
     } catch (error) {
       console.error(error);
@@ -87,10 +73,8 @@ export default function CartSidebar({
 
   const handleRemoveItem = async (product: any) => {
     try {
-      await removeItem(product._id);
-      setCartItems((prevItems) =>
-        prevItems.filter((item) => item.product._id !== product._id)
-      );
+      await removeFromCart(product._id);
+      await refreshCart()
       toast.success("Ürün sepetten çıkarıldı.");
     } catch (error) {
       console.error(error);
@@ -111,8 +95,10 @@ export default function CartSidebar({
         </button>
       </div>
       <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100%-60px)]">
-        {cartItems?.length && cartItems?.length === 0 ? (
-          <p>Sepetiniz boş</p>
+        {cartItems.length == 0 ? (
+          <p>
+            Sepetiniz boş <br /> Hemen alışverişe başlayalım
+          </p>
         ) : (
           cartItems?.map(({ product, quantity }) => (
             <div
@@ -151,12 +137,19 @@ export default function CartSidebar({
             </div>
           ))
         )}
-        <button
-          className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md mt-4"
-          onClick={handleClearCart}
-        >
-          Sepeti Temizle
-        </button>
+        {cartItems.length > 0 && (
+          <div className="p-4 border-t mt-auto">
+            <Button onClick={goToCartPage} className="w-full" variant="default">
+              Sepete Git
+            </Button>
+            <button
+              className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md mt-4"
+              onClick={handleClearCart}
+            >
+              Sepeti Temizle
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

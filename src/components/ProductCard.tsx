@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
-import { addToCart } from '@/services/cartService';
+import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
@@ -15,11 +15,12 @@ interface ProductCardProps {
 export function ProductCard({ id, name, price, imageUrl }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
+  const {addToCart} = useCart()
 
   const handleAddToCart = async () => {
     try {
       setLoading(true);
-      await addToCart({productId:id, quantity});
+      await addToCart(id, quantity);
       toast.success('Ürün sepete eklendi!');
       setQuantity(1); // Ekleme sonrası tekrar 1 yap
     } catch (error) {
