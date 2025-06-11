@@ -1,8 +1,12 @@
+"use client";
 import "./globals.css";
 import { Roboto, Pacifico } from "next/font/google";
 import { Toaster } from "sonner";
 import TopBar from "@/components/TopBar";
 import { CartProvider } from "../contexts/CartContext";
+import { useEffect } from "react";
+import { ensureGuestToken } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const roboto = Roboto({ subsets: ["latin"], weight: "400" });
 const pacifico = Pacifico({
@@ -16,14 +20,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname(); // ✅ Hook burada çağrılmalı
+  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
+
+  useEffect(() => {
+    ensureGuestToken();
+  }, []);
+
   return (
-    <html lang="tr" className={`${roboto.className} ${pacifico.variable}`}>
-      <body>
+    <html lang="tr">
+      <body className={`${roboto.className} ${pacifico.variable}`}>
         <CartProvider>
-          <TopBar />
+          {!isAuthPage && <TopBar />}
           {children}
         </CartProvider>
-        <Toaster position="top-center" richColors /> {/* Toaster global */}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

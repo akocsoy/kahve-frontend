@@ -102,11 +102,11 @@ export default function CartSidebar({
         ) : (
           cartItems?.map(({ product, quantity }) => (
             <div
-              key={product._id}
+              key={product?._id}
               className="flex items-center justify-between p-2"
             >
               <div>
-                <p className="font-semibold">{product.name}</p>
+                <p className="font-semibold">{product?.name}</p>
                 <p className="text-sm text-gray-600">{quantity} adet</p>
               </div>
               <div className="flex items-center gap-2">
