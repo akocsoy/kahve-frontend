@@ -1,101 +1,78 @@
 "use client";
 
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
-import { ShoppingCart, Plus, Minus, Info } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
-import { toast } from "sonner";
-import ProductModal from "./ProductModal";
+import clsx from "clsx";
+import { useRouter } from "next/navigation";
 
-interface ProductCardProps {
-  id: string;
+type ProductCardProps = {
   name: string;
   price: number;
-  imageUrl: string;
-}
+  image: string;
+  id: string;
+};
 
-export function ProductCard({ id, name, price, imageUrl }: ProductCardProps) {
-  const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const { addToCart } = useCart();
+export function ProductCard({ name, price, image, id }: ProductCardProps) {
+  const [hovered, setHovered] = useState(false);
+  const router = useRouter();
 
-  const handleAddToCart = async () => {
-    try {
-      setLoading(true);
-      await addToCart(id, quantity);
-      toast.success("Ürün sepete eklendi!");
-      setQuantity(1); // Ekleme sonrası tekrar 1 yap
-    } catch (error) {
-      console.error(error);
-      toast.error("Ürün sepete eklenirken hata oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  const openProductModal = () => {
-    setLoading(true);
-    setSelectedProduct({id,name,price,imageUrl})
-    setLoading(false)
+  const handleViewDetails = () => {
+      router.push(`/products/${id}`)
   };
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl bg-white shadow-md hover:shadow-lg transition">
-      <img
-        src={imageUrl}
-        alt={name}
-        className="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-      />
+    <div
+      className="relative w-full h-[18rem] sm:h-[20rem] rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col justify-end"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Background image */}
+      <div className="absolute inset-0">
+        <Image
+          src={image}
+          alt={name}
+          fill
+          className="object-cover object-center transition-all duration-300 group-hover:blur-sm"
+        />
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
 
-      {/* Hoverda gösterilecek alan */}
-      <div className="absolute inset-0 bg-black/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all" />
+      {/* Ürün adı ve fiyat */}
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 text-center px-4">
+        <h2 className="text-white font-bold text-lg sm:text-xl">{name}</h2>
+        <p className="text-white text-sm sm:text-base font-semibold mt-1">
+          {price.toFixed(2)} ₺
+        </p>
+      </div>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-all">
-        {/* Quantity selector */}
-        <div className="flex items-center gap-3 bg-white/80 backdrop-blur-md rounded-full p-2">
+      {/* Hover olduğunda ortada açılan overlay */}
+      <div
+        className={clsx(
+          "absolute inset-0 z-20 flex items-center justify-center",
+          "transition-opacity duration-300",
+          hovered ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div
+          className={clsx(
+            "bg-black/60 rounded-full p-4 sm:p-5",
+            "transition-transform duration-500 ease-in-out",
+            hovered ? "scale-100" : "scale-0"
+          )}
+        >
           <button
-            onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-            className="p-1 rounded-full hover:bg-gray-200"
+            onClick={handleViewDetails}
+            className="group flex items-center gap-1 text-white font-semibold border border-white/40 rounded-full px-4 py-2 text-xs sm:text-sm transition-all duration-300 hover:bg-white/10"
           >
-            <Minus size={18} />
-          </button>
-          <span className="font-bold text-lg">{quantity}</span>
-          <button
-            onClick={() => setQuantity((prev) => prev + 1)}
-            className="p-1 rounded-full hover:bg-gray-200"
-          >
-            <Plus size={18} />
-          </button>
-        </div>
-
-        {/* Sepete Ekle butonu */}
-        <div className="flex gap-2">
-          <button
-            onClick={handleAddToCart}
-            disabled={loading}
-            className="flex items-center gap-2 rounded-full bg-green-600 px-6 py-2 text-white hover:bg-green-700 disabled:opacity-50 text-sm"
-          >
-            <ShoppingCart size={20} />
-            {loading ? "Ekleniyor..." : "Sepete Ekle"}
-          </button>
-          <button
-            onClick={openProductModal}
-            disabled={loading}
-            className="flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50 text-sm"
-          >
-            <Info size={20} />
-            Ürün Detayları
+            Detaylar
+            <ArrowUpRight
+              size={14}
+              className="transition-transform duration-300 translate-y-px group-hover:rotate-45"
+            />
           </button>
         </div>
       </div>
-
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{name}</h3>
-        <p className="text-green-700 font-bold text-xl">{price.toFixed(2)} ₺</p>
-      </div>
-      {selectedProduct && (
-        <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
-      )}
     </div>
-    
   );
 }

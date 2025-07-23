@@ -12,8 +12,6 @@ import {
 import { useRouter } from "next/navigation";
 import CartSidebar from "./CartSidebar";
 import { useState } from "react";
-import { toast } from "sonner";
-import clsx from "clsx";
 import Cookies from "universal-cookie";
 
 export default function TopBar() {
@@ -22,20 +20,38 @@ export default function TopBar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const cookie = new Cookies();
+
   const handleLogout = async () => {
-    // localStorage'dan token'ı ve token expiration bilgisini sil
-    cookie.remove('token', { path: '/' });
-    cookie.remove('guest', { path: '/' });
-    cookie.remove('guestId', { path: '/' });
-    // Kullanıcıyı login sayfasına yönlendir
+    cookie.remove("token", { path: "/" });
+    cookie.remove("guest", { path: "/" });
+    cookie.remove("guestId", { path: "/" });
     router.push("/login");
   };
 
+  const hoverEffect =
+    "hover:text-brown-900 transition relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-brown-900 hover:after:w-full after:transition-all after:duration-300";
+
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 shadow-sm bg-[#efebea]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo */}
+        <div className="flex justify-center items-center py-4 relative">
+          {/* Left Menü */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-brown-700 absolute left-0">
+            <button
+              onClick={() => router.push("/")}
+              className={`flex items-center gap-1 ${hoverEffect}`}
+            >
+              <Home size={18} /> Ana Sayfa
+            </button>
+            <button
+              onClick={() => router.push("/about")}
+              className={`flex items-center gap-1 ${hoverEffect}`}
+            >
+              <Info size={18} /> Hakkımızda
+            </button>
+          </nav>
+
+          {/* Logo Ortada */}
           <div
             className="text-2xl font-bold text-brown-900 cursor-pointer tracking-wide"
             onClick={() => router.push("/")}
@@ -43,23 +59,11 @@ export default function TopBar() {
             ☕ Kahve Dükkanı
           </div>
 
-          {/* Desktop Menü */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-brown-700">
-            <button
-              onClick={() => router.push("/")}
-              className="hover:text-brown-900 transition flex items-center gap-1"
-            >
-              <Home size={18} /> Ana Sayfa
-            </button>
-            <button
-              onClick={() => router.push("/about")}
-              className="hover:text-brown-900 transition flex items-center gap-1"
-            >
-              <Info size={18} /> Hakkımızda
-            </button>
+          {/* Right Menü */}
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-brown-700 absolute right-0">
             <button
               onClick={() => router.push("/products")}
-              className="hover:text-brown-900 transition flex items-center gap-1"
+              className={`flex items-center gap-1 ${hoverEffect}`}
             >
               <Coffee size={18} /> Kahveler
             </button>
@@ -68,7 +72,7 @@ export default function TopBar() {
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="hover:text-brown-900 flex items-center gap-1 transition"
+                className={`flex items-center gap-1 ${hoverEffect}`}
               >
                 <User size={18} /> Profil
               </button>
@@ -100,7 +104,7 @@ export default function TopBar() {
 
             <button
               onClick={() => setSidebarToggle(true)}
-              className="hover:text-brown-900 transition flex items-center gap-1"
+              className={`flex items-center gap-1 ${hoverEffect}`}
             >
               <ShoppingCart size={18} /> Sepet
             </button>
@@ -109,7 +113,7 @@ export default function TopBar() {
           {/* Mobile Menü Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-brown-700"
+            className="md:hidden text-brown-700 absolute right-0"
           >
             <Menu size={24} />
           </button>

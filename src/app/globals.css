@@ -1,11 +1,14 @@
 @import "tailwindcss";
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --font-pacifico: 'Pacifico', cursive;
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: #efebea;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);

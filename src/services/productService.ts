@@ -9,6 +9,15 @@ export async function fetchProducts(filters?: Record<string, any>) {
     return [];
   }
 }
+export async function getProductById(id: string, filters?: Record<string, any>) {
+  try {
+    const response = await api.get(`/products/${id}`, { params: filters });
+    return response.data;
+  } catch (error) {
+    console.error('Ürünler alınırken hata oluştu:', error);
+    return [];
+  }
+}
 
 export const createProduct = async (data: {
   name: string;
