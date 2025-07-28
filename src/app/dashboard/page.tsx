@@ -10,6 +10,7 @@ import { ProductCard } from "@/components/products/ProductCard";
 import InfoCard from "@/components/ui/InfoCard";
 import Slider from "react-slick";
 import useWindowSize from "@/lib/hooks/useWindowSize";
+import Testimonials from "@/components/Testimonials";
 
 export default function DashboardPage() {
   interface Product {
@@ -106,6 +107,7 @@ export default function DashboardPage() {
           </Slider>
         </motion.div>
       </main>
+      <Testimonials />
     </div>
   );
 }

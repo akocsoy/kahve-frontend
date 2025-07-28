@@ -23,7 +23,7 @@ export function ProductCard({ name, price, image, id }: ProductCardProps) {
 
   return (
     <div
-      className="relative w-full h-[18rem] sm:h-[20rem] rounded-xl overflow-hidden shadow-md group transition-all duration-300 flex flex-col justify-end"
+      className="relative w-full h-[18rem] sm:h-[20rem] rounded-xl overflow-hidden shadow-md transition-all duration-300 flex flex-col justify-end"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -33,7 +33,11 @@ export function ProductCard({ name, price, image, id }: ProductCardProps) {
           src={image}
           alt={name}
           fill
-          className="object-cover object-center transition-all duration-300 group-hover:blur-sm"
+          className={clsx(
+          "object-cover object-center",
+          "transition-all duration-300",
+          hovered ? "blur-sm" : ""
+        )}
         />
         <div className="absolute inset-0 bg-black/30" />
       </div>
@@ -56,19 +60,23 @@ export function ProductCard({ name, price, image, id }: ProductCardProps) {
       >
         <div
           className={clsx(
-            "bg-black/60 rounded-full p-4 sm:p-5",
+            "bg-black/60 rounded-full p-1 sm:p-3 group hover:bg-[#50505071]",
             "transition-transform duration-500 ease-in-out",
+            "transition-colors duration-300 ease-in-out",
+            "hover:bg-[#50505071]",
+            "hover:text-white",
+            "hover:shadow-lg",
             hovered ? "scale-100" : "scale-0"
           )}
         >
           <button
             onClick={handleViewDetails}
-            className="group flex items-center gap-1 text-white font-semibold border border-white/40 rounded-full px-4 py-2 text-xs sm:text-sm transition-all duration-300 hover:bg-white/10"
+            className="group flex items-center gap-1 text-white font-semibold px-4 py-2 text-xs sm:text-sm transition-all duration-300"
           >
             Detaylar
             <ArrowUpRight
               size={14}
-              className="transition-transform duration-300 translate-y-px group-hover:rotate-45"
+              className="transition-transform duration-300 ml-1 translate-y-px group-hover:rotate-45"
             />
           </button>
         </div>

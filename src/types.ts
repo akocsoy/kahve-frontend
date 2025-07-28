@@ -1,10 +1,12 @@
 interface Product {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   price: number;
-  image: string;
+  images: string[];
   stock: number;
   discount: number | null;
   strength: number; // 1 to 5
+  ingredients: string[];
+  category: string;
 }
